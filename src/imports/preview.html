@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Michael Murombedzi — DevOps Terminal</title>
+<meta name="description" content="Michael Murombedzi — DevOps, Cloud, Linux and Infrastructure Automation portfolio.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070b10;--panel:#0b1118;--panel2:#0e1620;--fg:#e7f0f8;
+  --muted:#8291a3;--accent:#64ffda;--cyan:#7df9ff;--green:#35e07f;
+  --amber:#ffd166;--danger:#ff6b6b;--line:rgba(125,249,255,.14);
+  --shadow:0 24px 80px rgba(0,0,0,.45);--radius:14px;
+  --max:1180px
+}
+[data-theme="light"]{
+  --bg:#f3f7fb;--panel:#fff;--panel2:#eef5f9;--fg:#0b1520;
+  --muted:#5d6d7e;--accent:#0891b2;--cyan:#0284c7;--green:#16834b;
+  --amber:#a16207;--danger:#dc2626;--line:rgba(2,132,199,.18);
+  --shadow:0 24px 70px rgba(15,23,42,.14)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:
+ radial-gradient(circle at 15% 10%,rgba(100,255,218,.07),transparent 28%),
+ radial-gradient(circle at 85% 80%,rgba(125,249,255,.05),transparent 30%),
+ var(--bg);color:var(--fg);font-family:"Fira Mono",ui-monospace,SFMono-Regular,Menlo,monospace
+}
+a{color:var(--cyan);text-decoration:none}
+button,input{font:inherit}
+.app{max-width:var(--max);margin:24px auto;padding:0 16px}
+.terminal{background:color-mix(in srgb,var(--panel) 94%,transparent);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.titlebar{height:48px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.dot{width:11px;height:11px;border-radius:50%;margin-right:7px}.red{background:#ff5f56}.yellow{background:#ffbd2e}.green{background:#27c93f}
+.title{margin-left:7px;color:var(--muted);font-weight:700}
+.status{margin-left:auto;font-size:12px;color:var(--green)}
+.layout{display:grid;grid-template-columns:210px 1fr;min-height:720px}
+.sidebar{border-right:1px solid var(--line);padding:16px;background:rgba(0,0,0,.08)}
+.side-label{font-size:11px;color:var(--muted);margin:8px 0}
+.navbtn{display:block;width:100%;text-align:left;background:transparent;border:0;color:var(--fg);padding:9px 8px;border-radius:7px;cursor:pointer}
+.navbtn:hover,.navbtn.active{background:rgba(125,249,255,.08);color:var(--cyan)}
+.screen{padding:22px;overflow:auto}
+.boot{min-height:520px}
+.line{white-space:pre-wrap;line-height:1.55}
+.prompt{color:var(--cyan)}.accent{color:var(--accent)}.muted{color:var(--muted)}.ok{color:var(--green)}.warn{color:var(--amber)}
+.caret{display:inline-block;width:9px;height:1.05em;background:var(--accent);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h3{margin:0 0 8px;font-size:14px}.card p{margin:6px 0;color:var(--muted);font-size:13px;line-height:1.6}
+.badge{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:4px 8px;margin:3px 4px 3px 0;color:var(--muted);font-size:11px}
+.kpi{font-size:24px;color:var(--cyan);font-weight:700}.small{font-size:11px;color:var(--muted)}
+.section-title{font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:8px;margin:22px 0 12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{border:1px solid var(--line);background:transparent;color:var(--cyan);padding:8px 11px;border-radius:7px;cursor:pointer}
+.btn:hover{background:rgba(125,249,255,.08)}
+.hero{padding:8px 0 10px}
+.hero h1{font-size:clamp(28px,5vw,56px);line-height:1.02;margin:10px 0}
+.hero .role{font-size:clamp(14px,2vw,19px);color:var(--accent)}
+.command{display:flex;gap:9px;align-items:center;border-top:1px solid var(--line);margin-top:22px;padding-top:15px}
+.command input{flex:1;background:transparent;border:0;outline:0;color:var(--fg);min-width:0}
+.project{position:relative}
+.project .status-pill{position:absolute;right:14px;top:14px;font-size:10px;color:var(--green)}
+.credential{display:grid;grid-template-columns:86px 1fr;gap:13px}
+.thumb{width:86px;height:64px;border:1px solid var(--line);border-radius:8px;background:linear-gradient(135deg,var(--panel),var(--panel2));display:flex;align-items:center;justify-content:center;text-align:center;color:var(--cyan);font-size:10px;padding:7px}
+.thumb.featured{height:100px}
+.arch{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;align-items:center}
+.node{padding:12px 7px;text-align:center;border:1px solid var(--line);border-radius:9px;background:var(--panel2);font-size:11px}
+.arrow{text-align:center;color:var(--accent)}
+.table{width:100%;border-collapse:collapse;font-size:12px}.table td,.table th{padding:9px;border-bottom:1px solid var(--line);text-align:left}.table th{color:var(--muted)}
+.hidden{display:none!important}
+.footer{border-top:1px solid var(--line);padding:11px 16px;color:var(--muted);font-size:11px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{border-right:0;border-bottom:1px solid var(--line);display:flex;gap:5px;overflow:auto}.side-label{display:none}.navbtn{width:auto;white-space:nowrap}.grid{grid-template-columns:1fr}.arch{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.screen{padding:16px}.app{margin:8px auto}.terminal{border-radius:10px}}
+</style>
+</head>
+<body data-theme="dark">
+<div class="app">
+<div class="terminal">
+<div class="titlebar">
+<span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+<span class="title">mikey@devops — bash</span><span class="status">● SYSTEM READY</span>
+</div>
+<div class="layout">
+<aside class="sidebar">
+<div class="side-label">NAVIGATION</div>
+<button class="navbtn active" data-cmd="status">dashboard</button>
+<button class="navbtn" data-cmd="about">about</button>
+<button class="navbtn" data-cmd="projects">projects</button>
+<button class="navbtn" data-cmd="skills">skills</button>
+<button class="navbtn" data-cmd="certs">certs</button>
+<button class="navbtn" data-cmd="experience">experience</button>
+<button class="navbtn" data-cmd="architecture">architecture</button>
+<button class="navbtn" data-cmd="contact">contact</button>
+<div class="side-label">EXTERNAL</div>
+<button class="navbtn" data-cmd="github">GitHub ↗</button>
+<button class="navbtn" data-cmd="credly">Credly ↗</button>
+</aside>
+<main class="screen" id="screen" tabindex="0" aria-live="polite"></main>
+</div>
+<div class="command"><span class="prompt">mikey@devops</span>:<span class="accent">~</span>$ <input id="cmd" aria-label="Terminal command" autocomplete="off" spellcheck="false" placeholder="type help..." autofocus><span class="caret"></span></div>
+<div class="footer">Interactive portfolio • Type <span class="accent">help</span> for commands • ↑/↓ history • Mobile friendly</div>
+</div>
+</div>
+<script>
+const DATA = {
+  name:"Michael Murombedzi",
+  title:"DevOps Engineer | Cloud Engineer | Linux & Infrastructure Automation",
+  shortTitle:"DevOps | Cloud | Automation",
+  location:"Pretoria, Gauteng, South Africa",
+  email:"scarmikey13@gmail.com",
+  links:{
+    github:"https://github.com/scarmikey",
+    linkedin:"https://www.linkedin.com/in/michael-murombedzi-b8231b258",
+    credly:"https://www.credly.com/users/michael-murombedzi",
+    site:"https://digitalmikeypro.com"
+  },
+  education:"University of the People — Associate Degree in Computer Science | 2024–Present",
+  skills:{
+    "Cloud":["AWS","Microsoft Azure","GCP fundamentals"],
+    "DevOps & IaC":["Terraform","Ansible","Docker","Kubernetes","GitHub Actions","Jenkins"],
+    "Linux & Systems":["RHEL","Ubuntu","Bash","Windows Server","Active Directory","Group Policy"],
+    "Programming":["Python","Bash","PowerShell"],
+    "Monitoring":["Prometheus","Grafana","CloudWatch","Loki"],
+    "Networking":["TCP/IP","DNS","DHCP","VPN","VPC","VLAN","Wi-Fi"],
+    "Security":["IAM","Linux security","Container/Kubernetes security fundamentals","ISC2 CC"],
+    "Version Control":["Git","GitHub"],
+    "Virtualization":["VMware","vSphere","VirtualBox"]
+  },
+  experience:[
+    {role:"System Administrator",company:"DubeTC Engineering Projects",dates:"January 2023 – January 2025",
+      bullets:["Administered and troubleshot Linux and Windows systems.","Managed system configuration, user access, networking, backups and infrastructure troubleshooting.","Applied Bash/Python scripting and automation concepts to repetitive administrative tasks.","Supported cloud and virtualization environments and investigated infrastructure incidents."]},
+    {role:"Cloud / DevOps Intern",company:"Exlearn Technologies",dates:"October 2024 – June 2025",
+      bullets:["Built hands-on experience with cloud infrastructure, DevOps workflows and infrastructure automation.","Worked with AWS, Docker, Terraform, CI/CD concepts and Linux-based environments.","Practiced container deployment, infrastructure provisioning and version-controlled development workflows.","Supported monitoring with Prometheus and Grafana and DNS/infrastructure support tasks."]},
+    {role:"IT Support Technician",company:"Pat Groove",dates:"January 2022 – December 2023",
+      bullets:["Provided technical support across hardware, software, operating systems and networking.","Supported Windows environments, user accounts and workstation configuration.","Assisted with networking, DNS and connectivity troubleshooting.","Installed and configured software and hardware and performed routine maintenance."]}
+  ],
+  projects:[
+    {id:"phoenix",name:"Phoenix Cloud / DevOps Capstone",status:"COMPLETED",stack:["Azure","GitHub","CI/CD","Automation"],
+      summary:"End-to-end cloud/DevOps project built around source control, automation and cloud deployment practices.",
+      details:["Built a practical Azure-focused DevOps workflow.","Used GitHub-based CI/CD practices to manage project changes and delivery.","This project is a flagship case study for the portfolio and will be expanded with deployment evidence as the infrastructure is finalized."],
+      repo:"https://github.com/scarmikey"},
+    {id:"ts-capstone",name:"TS Academy — DevOps Capstone",status:"COMPLETED",stack:["Linux","Git","AWS","Terraform","Ansible","Docker","Kubernetes","GitHub Actions","Prometheus","Grafana"],
+      summary:"Practical DevOps capstone integrating infrastructure provisioning, configuration management, containerization, CI/CD and monitoring.",
+      details:["Terraform for Infrastructure as Code.","Ansible for configuration management and automation.","Docker and Kubernetes for containerized workloads.","GitHub Actions for CI/CD.","Prometheus and Grafana for monitoring and observability.","Evaluator feedback: “Great job.” Grade recorded as 50; grading scale not specified."],
+      repo:"https://github.com/scarmikey"},
+    {id:"multicloud",name:"Multi-Cloud Infrastructure",status:"PROJECT",stack:["AWS","Azure","Terraform","Linux","Networking"],
+      summary:"Multi-cloud infrastructure practice using Terraform and repeatable deployment principles.",
+      details:["Worked across AWS and Microsoft Azure.","Applied cloud networking, security and Infrastructure as Code concepts.","Focused on repeatable infrastructure configuration."],repo:"https://github.com/scarmikey"},
+    {id:"nginx",name:"Terraform + Docker + NGINX Deployment",status:"PROJECT",stack:["Terraform","Docker","NGINX","Linux","Git"],
+      summary:"Infrastructure deployment using Terraform and a containerized NGINX workload.",
+      details:["Applied Infrastructure as Code principles to make deployment repeatable.","Configured and deployed the application in a Linux environment.","Used Git-based version control."],repo:"https://github.com/scarmikey"},
+    {id:"serverless",name:"Serverless Cloud Application",status:"PROJECT",stack:["AWS Lambda","API Gateway","Python"],
+      summary:"Serverless application using AWS Lambda and API Gateway with Python.",
+      details:["Applied event-driven architecture.","Worked with API integration and cloud-native deployment concepts."],repo:"https://github.com/scarmikey"},
+    {id:"cloud-resume",name:"Cloud Resume Challenge / Portfolio",status:"BUILDING",stack:["AWS","Terraform","S3","CloudFront","Route 53","Lambda","DynamoDB","Python"],
+      summary:"This portfolio is being developed into the Cloud Resume project itself.",
+      details:["The portfolio is the product; the cloud infrastructure behind it is the engineering project.","Planned architecture includes static hosting/CDN, Infrastructure as Code, CI/CD and a serverless visitor counter.","Only implemented services will be shown as live in the final deployment."],repo:"https://github.com/scarmikey"}
+  ],
+  credentials:[
+    {name:"TS Academy — DevOps Engineering",issuer:"TS Academy",category:"DevOps",date:"August 31, 2026",id:"TSX5BZ8LM3947W",status:"COMPLETED",featured:true,preview:"4-MONTH DEVOPS",link:"#ts-academy"},
+    {name:"ISC2 Certified in Cybersecurity (CC)",issuer:"ISC2",category:"Security",status:"EARNED",featured:true,credly:true},
+    {name:"Red Hat System Administration I & II",issuer:"Red Hat",category:"Linux",status:"EARNED",featured:true,credly:true},
+    {name:"Linux Foundation — Introduction to Kubernetes (LFS158)",issuer:"Linux Foundation",category:"Kubernetes",status:"EARNED",featured:true,credly:true},
+    {name:"Aviatrix Multicloud Network Associate",issuer:"Aviatrix",category:"Networking",status:"EARNED",credly:true},
+    {name:"KodeKloud — Terraform Challenges",issuer:"KodeKloud",category:"DevOps",status:"EARNED"},
+    {name:"Proofpoint Certified AI Email Security Specialist",issuer:"Proofpoint",category:"Security",status:"EARNED"},
+    {name:"SnowPro Associate: Platform Certification",issuer:"Snowflake",category:"Data / Cloud",status:"EARNED",credly:true},
+    {name:"Confluent Data Streaming Engineer",issuer:"Confluent",category:"Data",status:"EARNED",credly:true},
+    {name:"New Relic Verified Foundation",issuer:"New Relic",category:"Observability",status:"EARNED"},
+    {name:"Oracle AI Practitioner",issuer:"Oracle",category:"AI",status:"IN PROGRESS"}
+  ],
+  certLinks:{
+    credly:"https://www.credly.com/users/michael-murombedzi",
+    sancs:""
+  }
+};
+
+const screen=document.getElementById("screen");
+const input=document.getElementById("cmd");
+const history=[]; let hidx=0;
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function print(s,cls="line"){const d=document.createElement("div");d.className=cls;d.innerHTML=s;screen.appendChild(d);screen.scrollTop=screen.scrollHeight}
+function section(t){print(`<div class="section-title">${esc(t)}</div>`)}
+function badges(arr){return arr.map(x=>`<span class="badge">${esc(x)}</span>`).join("")}
+
+function dashboard(){
+ screen.innerHTML="";
+ print(`<div class="hero"><div class="small">mikey@devops:~$ system --profile</div><h1>${esc(DATA.name)}</h1><div class="role">${esc(DATA.title)}</div><p class="muted">Cloud infrastructure • DevOps • Linux • Automation • Security-minded engineering</p></div>`);
+ section("System status");
+ print(`<div class="grid">
+  <div class="card"><h3>Cloud</h3><div class="kpi">AWS / Azure</div><p>Cloud engineering and Infrastructure as Code focus.</p></div>
+  <div class="card"><h3>DevOps</h3><div class="kpi">CI/CD</div><p>Terraform • Docker • Kubernetes • GitHub Actions • Jenkins</p></div>
+  <div class="card"><h3>Security</h3><div class="kpi">ISC2 CC</div><p>Security fundamentals integrated into infrastructure work.</p></div>
+  <div class="card"><h3>Education</h3><div class="kpi">CS</div><p>${esc(DATA.education)}</p></div>
+ </div>`);
+ section("Featured work");
+ DATA.projects.filter(p=>["phoenix","ts-capstone","cloud-resume"].includes(p.id)).forEach(p=>print(projectCard(p)));
+ print(`<div class="actions"><button class="btn" onclick="run('projects')">./projects</button><button class="btn" onclick="run('certs')">./certs</button><button class="btn" onclick="run('architecture')">./architecture</button><button class="btn" onclick="run('contact')">./contact</button></div>`);
+}
+function projectCard(p){
+ return `<div class="card project"><span class="status-pill">${esc(p.status)}</span><h3>${esc(p.name)}</h3><div>${badges(p.stack)}</div><p>${esc(p.summary)}</p><div class="actions"><button class="btn" onclick="run('project ${p.id}')">inspect</button>${p.repo?`<a class="btn" href="${p.repo}" target="_blank" rel="noopener">GitHub</a>`:""}</div></div>`;
+}
+function about(){
+ screen.innerHTML=""; section("About");
+ print(`<div class="card"><h3>${esc(DATA.name)}</h3><p>Cloud and DevOps-focused systems professional with hands-on experience in Linux administration, cloud infrastructure, containerization, Infrastructure as Code and CI/CD automation.</p><p>Currently pursuing an Associate Degree in Computer Science and building practical cloud and DevOps projects.</p><p><b>Location:</b> ${esc(DATA.location)}</p></div>`);
+}
+function skills(){
+ screen.innerHTML=""; section("Technical stack");
+ Object.entries(DATA.skills).forEach(([k,v])=>print(`<div class="card" style="margin:10px 0"><h3>${esc(k)}</h3>${badges(v)}</div>`));
+}
+function projects(){
+ screen.innerHTML=""; section("Projects");
+ DATA.projects.forEach(p=>print(projectCard(p)));
+}
+function project(id){
+ const p=DATA.projects.find(x=>x.id===id);
+ screen.innerHTML=""; if(!p){print(`Project not found: ${esc(id)}`);return}
+ section(p.name);
+ print(`<div class="card"><div class="small">STATUS</div><div class="kpi">${esc(p.status)}</div><p>${esc(p.summary)}</p><div>${badges(p.stack)}</div></div>`);
+ section("Case study");
+ p.details.forEach(x=>print(`<div class="line">• ${esc(x)}</div>`));
+ print(`<div class="actions">${p.repo?`<a class="btn" href="${p.repo}" target="_blank" rel="noopener">Open GitHub</a>`:""}<button class="btn" onclick="run('architecture')">View architecture</button></div>`);
+}
+function certs(){
+ screen.innerHTML=""; section("Credential vault");
+ print(`<div class="card"><h3>Verification hub</h3><p>Credly profile: <a href="${DATA.certLinks.credly}" target="_blank" rel="noopener">${DATA.certLinks.credly}</a></p>${DATA.certLinks.sancs?`<p>SANCS: <a href="${DATA.certLinks.sancs}" target="_blank" rel="noopener">${DATA.certLinks.sancs}</a></p>`:`<p class="muted">SANCS verification link: not yet supplied.</p>`}</div>`);
+ section("Featured credentials");
+ print(`<div class="grid">${DATA.credentials.filter(c=>c.featured).map(credentialCard).join("")}</div>`);
+ section("Full credential library");
+ print(`<table class="table"><thead><tr><th>Credential</th><th>Issuer</th><th>Category</th><th>Status</th></tr></thead><tbody>${DATA.credentials.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.issuer)}</td><td>${esc(c.category)}</td><td>${esc(c.status)}</td></tr>`).join("")}</tbody></table>`);
+}
+function credentialCard(c){
+ const thumb=c.preview?esc(c.preview):"BADGE PREVIEW";
+ return `<div class="card credential"><div class="thumb featured">${thumb}</div><div><h3>${esc(c.name)}</h3><p>${esc(c.issuer)} • ${esc(c.category)}</p>${c.date?`<p><b>Certified:</b> ${esc(c.date)}</p>`:""}${c.id?`<p><b>ID:</b> ${esc(c.id)}</p>`:""}<p><span class="ok">● ${esc(c.status)}</span></p><div class="actions">${c.name.includes("TS Academy")?`<button class="btn" onclick="run('project ts-capstone')">Case study</button>`:""}<a class="btn" href="${DATA.certLinks.credly}" target="_blank" rel="noopener">Credly</a></div></div></div>`;
+}
+function experience(){
+ screen.innerHTML=""; section("Professional experience");
+ DATA.experience.forEach(e=>{print(`<div class="card" style="margin:10px 0"><h3>${esc(e.role)} — ${esc(e.company)}</h3><p>${esc(e.dates)}</p>${e.bullets.map(b=>`<div>• ${esc(b)}</div>`).join("")}</div>`)});
+}
+function architecture(){
+ screen.innerHTML=""; section("Cloud Resume / Portfolio architecture");
+ print(`<div class="card"><p class="muted">Planned/implemented services are shown only when actually deployed.</p><div class="arch">
+  <div class="node">USER</div><div class="arrow">→</div><div class="node">Route 53<br>DNS</div><div class="arrow">→</div><div class="node">CloudFront<br>CDN</div>
+ </div><div class="arch" style="margin-top:10px">
+  <div class="node">S3<br>Frontend</div><div class="arrow">→</div><div class="node">Lambda<br>API</div><div class="arrow">→</div><div class="node">DynamoDB<br>Counter</div>
+ </div><p>Infrastructure as Code: Terraform • Delivery: GitHub Actions • Runtime: serverless where appropriate.</p></div>`);
+}
+function contact(){
+ screen.innerHTML=""; section("Contact");
+ print(`<div class="card"><p>Email: <a href="mailto:${esc(DATA.email)}">${esc(DATA.email)}</a></p><p>GitHub: <a href="${DATA.links.github}" target="_blank">${DATA.links.github}</a></p><p>LinkedIn: <a href="${DATA.links.linkedin}" target="_blank">${DATA.links.linkedin}</a></p><p>Credly: <a href="${DATA.links.credly}" target="_blank">${DATA.links.credly}</a></p></div>`);
+}
+function status(){
+ screen.innerHTML=""; section("System status");
+ print(`<div class="grid"><div class="card"><h3>Portfolio</h3><div class="ok">● ONLINE</div></div><div class="card"><h3>Cloud Resume</h3><div class="warn">● BUILDING</div></div><div class="card"><h3>TS Academy DevOps</h3><div class="ok">● COMPLETED</div></div><div class="card"><h3>Education</h3><div class="ok">● IN PROGRESS</div></div></div>`);
+}
+function help(){
+ screen.innerHTML=""; section("Available commands");
+ print(`<div class="line"><span class="accent">about</span>       — profile<br><span class="accent">skills</span>      — technical stack<br><span class="accent">projects</span>    — project index<br><span class="accent">project &lt;id&gt;</span> — project case study<br><span class="accent">certs</span>       — credential vault<br><span class="accent">experience</span>  — professional experience<br><span class="accent">architecture</span>— cloud architecture<br><span class="accent">status</span>      — system status<br><span class="accent">contact</span>     — contact links<br><span class="accent">github</span>      — GitHub profile<br><span class="accent">credly</span>      — Credly profile<br><span class="accent">resume</span>      — CV download<br><span class="accent">theme</span>       — toggle theme<br><span class="accent">clear</span>       — clear terminal<br><span class="accent">sudo hire mikey</span> — Easter egg</div>`);
+}
+function run(raw){
+ const cmd=(raw||"").trim(); if(!cmd)return;
+ history.push(cmd);hidx=history.length;
+ if(cmd==="help")help();else if(cmd==="about")about();else if(cmd==="skills")skills();else if(cmd==="projects")projects();
+ else if(cmd==="certs"||cmd==="certifications")certs();else if(cmd==="experience")experience();else if(cmd==="architecture")architecture();
+ else if(cmd==="contact")contact();else if(cmd==="status")status();else if(cmd==="github")window.open(DATA.links.github,"_blank");
+ else if(cmd==="credly")window.open(DATA.links.credly,"_blank");else if(cmd==="resume")window.open("Michael_Murombedzi_Updated_CV_2026.pdf","_blank");
+ else if(cmd==="theme"){document.body.setAttribute("data-theme",document.body.dataset.theme==="light"?"dark":"light")}
+ else if(cmd==="clear")screen.innerHTML="";
+ else if(cmd==="sudo hire mikey"){screen.innerHTML="";print("Checking authorization...");setTimeout(()=>print("Technical foundation .... PASS<br>Cloud experience ........ PASS<br>DevOps projects ......... PASS<br>Security knowledge ...... PASS<br><br><span class='ok'>ACCESS GRANTED.</span>"),180)}
+ else if(cmd.startsWith("project ")){project(cmd.slice(8).trim())}
+ else {screen.innerHTML="";print(`Command not found: ${esc(cmd)}. Type <span class="accent">help</span>.`)}
+}
+window.run=run; window.dashboard=dashboard;
+document.querySelectorAll(".navbtn").forEach(b=>b.addEventListener("click",()=>run(b.dataset.cmd)));
+document.getElementById("cmd").addEventListener("keydown",e=>{
+ if(e.key==="Enter"){run(input.value);input.value=""}
+ if(e.key==="ArrowUp"){hidx=Math.max(0,hidx-1);input.value=history[hidx]||"";e.preventDefault()}
+ if(e.key==="ArrowDown"){hidx=Math.min(history.length,hidx+1);input.value=history[hidx]||"";e.preventDefault()}
+});
+document.getElementById("screen").addEventListener("click",()=>input.focus());
+dashboard();
+</script>
+</body>
+</html>
